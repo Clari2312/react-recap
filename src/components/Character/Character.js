@@ -1,10 +1,20 @@
 import { Component } from "react";
 import "./Character.css";
 
-class Paragraph extends Component {
+class Character extends Component {
+  componentWillUnmount() {
+    console.log("character will unmount....");
+  }
+
   render() {
-    return <div className="card">{this.props.user}</div>;
+    const { onDelete, charIndex } = this.props;
+
+    return (
+      <div className="card" onClick={() => onDelete(charIndex)}>
+        {this.props.user}
+      </div>
+    );
   }
 }
 
-export default Paragraph;
+export default Character;

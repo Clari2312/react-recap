@@ -1,12 +1,69 @@
 import { Component } from "react";
-import { Character, Paragraph, Title, Dialog } from "./components";
+import { Character, Paragraph, Title, Dialog, Form } from "./components";
 
 import "./App.css";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    console.log("constructor is executed");
+  }
+
   state = {
     userList: ["Paperino", "Topolino", "Pluto", "Paperina", "Pippo"],
     isOpen: false,
+    form: {
+      index: "",
+      name: "",
+    },
+  };
+
+  componentDidMount() {
+    console.log("component did mount");
+    // usato spesso per fare i fetch
+  }
+
+  // this.setState()
+  shouldComponentUpdate() {
+    console.log("should component update");
+    return true;
+  }
+
+  componentDidUpdate() {
+    console.log("component did update..");
+  }
+
+  componentWillUnmount() {
+    console.log("component will unmount");
+  }
+
+  changeIndexHandler = (event) => {
+    console.log("event ", event.target.value);
+    // ES6 -> Destructuring
+    const { value } = event.target;
+    // se passo una funzione nel setState.
+    // quella funzione cattura il precedente Stato e precedente Props
+    this.setState((prevState, prevProps) => {
+      return {
+        form: {
+          index: value,
+          name: prevState.form.name,
+        },
+      };
+    });
+  };
+
+  changeNameHandler = (event) => {
+    const { value } = event.target;
+    console.log("event ", event.target.value);
+    this.setState((prevState, prevProps) => {
+      return {
+        form: {
+          index: prevState.form.index,
+          name: value,
+        },
+      };
+    });
   };
 
   // Cambiamento di stato al click del bottone change
@@ -16,7 +73,10 @@ class App extends Component {
     //   isOpen: true,
     // });
     //al cambiamento di stato usa una funzione
-    this.setState((prevState) => ({ isOpen: true }));
+    this.setState((prevState) => {
+      // console.log("prevState ", prevState);
+      return { isOpen: true };
+    });
   };
 
   closeDialog = () => {
@@ -24,11 +84,13 @@ class App extends Component {
   };
 
   //arrow function
-  changeList = (index, newValue, event) => {
+  changeList = (event) => {
     console.log("event ", event);
+    const newIndex = this.state.form.index;
+    const newName = this.state.form.name;
     this.setState((prev) => {
       let newList = [...prev.userList];
-      newList[index] = newValue;
+      newList[newIndex] = newName;
       return { userList: newList };
     });
   };
@@ -44,10 +106,24 @@ class App extends Component {
   //   });
   // }
 
+  deleteCardHandler = (index) => {
+    const newList = this.state.userList;
+    newList.splice(index, 1);
+    this.setState({
+      userList: newList,
+    });
+  };
+
   render() {
-    console.log("state ", this.state);
+    console.log("rendering...");
+    // console.log("state ", this.state);
     const characterList = this.state.userList.map((value, i) => (
-      <Character key={value + i} user={value} />
+      <Character
+        key={value + i}
+        user={value}
+        charIndex={i}
+        onDelete={this.deleteCardHandler}
+      />
     ));
 
     return (
@@ -57,8 +133,11 @@ class App extends Component {
           <Dialog close={this.closeDialog} confirmed={this.changeList} />
         )}
         <Title />
-
-        <button onClick={this.openDialog}>change</button>
+        <Form
+          open={this.openDialog}
+          changeIndex={this.changeIndexHandler}
+          changeName={this.changeNameHandler}
+        />
 
         {/* event in arrow function */}
         {/* <button onClick={(e) => this.changeList(0, "Pluto", e)}>change</button> */}

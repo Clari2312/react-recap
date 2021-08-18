@@ -14,7 +14,7 @@ class Dialog extends Component {
             <button onClick={close}>Cancel</button>
             <button
               onClick={() => {
-                confirmed(0, "Pippo");
+                confirmed();
                 close();
               }}
             >
